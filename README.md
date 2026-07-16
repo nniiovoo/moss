@@ -24,6 +24,7 @@ Moss currently targets Monad mainnet, chain ID `143`.
 | ERC-721 | `@themoss/erc` | `transfer` | `ownerOf`, `balanceOf` |
 | Kuru | `@themoss/protocol-kuru` | `swap` | `quote` |
 | PancakeSwap V2 / V3 | `@themoss/protocol-pancakeswap` | `swap` | `quote` |
+| Morpho | `@themoss/protocol-morpho` | — | `position` |
 
 ## Quickstart
 

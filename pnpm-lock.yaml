@@ -160,6 +160,9 @@ importers:
       '@themoss/protocol-kuru':
         specifier: workspace:*
         version: link:../protocols/kuru
+      '@themoss/protocol-morpho':
+        specifier: workspace:*
+        version: link:../protocols/morpho
       '@themoss/protocol-pancakeswap':
         specifier: workspace:*
         version: link:../protocols/pancakeswap

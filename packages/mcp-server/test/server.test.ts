@@ -89,6 +89,9 @@ describe("moss MCP server", () => {
         }),
       ]),
     );
+    expect(
+      parseText(await client.callTool({ name: "discover", arguments: { protocol: "morpho" } })),
+    ).toEqual([expect.objectContaining({ protocol: "morpho", method: "position", kind: "query" })]);
     const loaded = parseText(
       await client.callTool({
         name: "load",
