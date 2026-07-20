@@ -182,6 +182,20 @@ export class Kuru {
 
       const event = tryDecodeKuruEvent(KuruOrderbookAbi, change);
       if (!event) return this.erc20.changesReceipt([change]);
+      if (event.eventName === "FlipOrderUpdated") {
+        const data = {
+          event: "FlipOrderUpdated",
+          emitter: change.address,
+          orderId: event.args.orderId.toString(),
+          size: event.args.size.toString(),
+        } as const;
+        return {
+          kind: "change" as const,
+          change,
+          data,
+          text: `Flip Order Updated: ${data.orderId} now has size ${data.size} at ${data.emitter}`,
+        };
+      }
       if (event.eventName !== "Trade") {
         throw new Error(`Unexpected Change: Kuru market emitted ${event.eventName}`);
       }

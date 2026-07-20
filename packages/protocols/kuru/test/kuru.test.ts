@@ -211,10 +211,11 @@ describe("Kuru", () => {
     if (capability.kind !== "capability") throw new Error("expected capability");
     const secondTrade = tradeChange(MON_AUSD, 2n);
     const transfer = erc20Transfer(USDC_ADDRESS, ACCOUNT, KURU_ROUTER_ADDRESS, 1_000_000n);
+    const flipOrderUpdate = flipOrderUpdatedChange(MON_USDC, 7n, 30n);
     const firstTrade = tradeChange(MON_USDC, 1n);
     const router = routerSwapChange(ACCOUNT, USDC_ADDRESS, AUSD_ADDRESS, 1_000_000n, 1_200_000n);
 
-    const changes = [secondTrade, transfer, firstTrade, router] as const;
+    const changes = [secondTrade, transfer, flipOrderUpdate, firstTrade, router] as const;
     const receipt = registry.parseReceipt(capability, changes);
     expect(receipt.outcome).toEqual({
       operation: "swap",
@@ -236,6 +237,15 @@ describe("Kuru", () => {
           amount: "1000000",
         },
       ],
+    });
+    expect(receipt.changes[2]).toMatchObject({
+      kind: "change",
+      data: {
+        event: "FlipOrderUpdated",
+        emitter: MON_USDC,
+        orderId: "7",
+        size: "30",
+      },
     });
     expect(receipt.changes.map(firstChange)).toEqual(changes);
   });
@@ -636,6 +646,16 @@ function tradeChange(address: `0x${string}`, orderId: bigint): Change {
   );
 }
 
+function flipOrderUpdatedChange(address: `0x${string}`, orderId: bigint, size: bigint): Change {
+  return eventChange(
+    address,
+    KuruOrderbookAbi,
+    "FlipOrderUpdated",
+    [orderId, size],
+    ["uint40", "uint96"],
+  );
+}
+
 function routerSwapChange(
   sender: `0x${string}`,
   tokenIn: `0x${string}`,
@@ -673,7 +693,7 @@ function erc20Transfer(
 function eventChange(
   address: `0x${string}`,
   abi: typeof KuruRouterAbi | typeof KuruOrderbookAbi,
-  eventName: "Trade" | "KuruRouterSwap",
+  eventName: "Trade" | "FlipOrderUpdated" | "KuruRouterSwap",
   values: readonly unknown[],
   types: readonly string[],
 ): Change {
